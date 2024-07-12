@@ -10,14 +10,7 @@
         OTHER_BOX_SIZE: 70,
         PREDICTION_DISTANCE: 36,
         CIRCLE_RADIUS: 10,
-        smoothingFactor: 0.7,
-        multiStepPredictions: 50,
         drawBoxesFrames: 60,
-        createLaserFrames: 60,
-        dt: 0.1,
-        laserColor: 0xFF0000,
-        collisionColor: 0x0000FF,
-        afterImageColor: 0x00FF00,
         predictionCircleColor: 0x00FF00,
         predictionCircleStyle: 'fill',
         showBoxes: true,
@@ -34,30 +27,10 @@
         const sp = new SettingsProvider(settings, onSettingsApplied);
 
         const generalSection = sp.addSection("General Settings");
-        generalSection.addSliderField("smoothingFactor", "Smoothing Factor", {
-            min: 0.0,
-            max: 2.0,
-            step: 0.1
-        });
-        generalSection.addSliderField("multiStepPredictions", "Multi-Step Predictions", {
-            min: 0,
-            max: 1000,
-            step: 1
-        });
         generalSection.addSliderField("drawBoxesFrames", "Draw Boxes Frames (FPS)", {
             min: 30,
             max: 230,
             step: 1
-        });
-        generalSection.addSliderField("createLaserFrames", "Create Laser Frames (FPS)", {
-            min: 30,
-            max: 230,
-            step: 1
-        });
-        generalSection.addSliderField("dt", "Prediction Time Step (dt)", {
-            min: 0.0,
-            max: 3.0,
-            step: 0.1
         });
 
         const circleSettingsSection = sp.addSection("Prediction Circle Settings");
@@ -91,46 +64,13 @@
         settingsProvider: createSettingsProvider()
     });
 
-    function getClosestPlayer() {
+    function drawBoxes() {
         let myPlayer = Players.get(game.myID);
-        if (!myPlayer) return null;
-
-        let closestPlayer = null;
-        let closestDistance = Infinity;
+        if (!myPlayer) return;
 
         for (let id in Players.all()) {
             let player = Players.get(id);
             if (player && player.status === 0 && !player.me()) {
-                let distance = Math.sqrt(Math.pow(player.pos.x - myPlayer.pos.x, 2) + Math.pow(player.pos.y - myPlayer.pos.y, 2));
-                if (distance < closestDistance) {
-                    closestDistance = distance;
-                    closestPlayer = player;
-                }
-            }
-        }
-
-        return closestPlayer;
-    }
-
-    function drawBoxes() {
-        let myPlayer = Players.get(game.myID);
-        let closestPlayer = getClosestPlayer();
-
-        for (let id in Players.all()) {
-            let player = Players.get(id);
-            if (player) {
-                if (player.status !== 0 || player.me() || player !== closestPlayer) {
-                    if (player.sprites.box) {
-                        player.sprites.box.clear();
-                        player.sprites.box.visible = false;
-                    }
-                    if (player.sprites.predictionCircle) {
-                        player.sprites.predictionCircle.clear();
-                        player.sprites.predictionCircle.visible = false;
-                    }
-                    continue;
-                }
-
                 if (!player.sprites.box) {
                     player.sprites.box = new PIXI.Graphics();
                     game.graphics.layers.playernames.addChild(player.sprites.box);
