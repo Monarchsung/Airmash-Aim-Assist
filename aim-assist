@@ -119,7 +119,7 @@
     }
 
     SWAM.registerExtension({
-        name: "aim-assist",
+        name: "Aim-Assist",
         id: "predictionAndLaserExtension",
         description: "Extension with customizable settings for predictions and lasers",
         author: "Monarch",
